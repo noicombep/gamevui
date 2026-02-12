@@ -1,0 +1,147 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ===== MAIN WRAPPER ===== */
+
+.game {
+  width: 1400px;
+  height: 750px;
+  margin: auto;
+  position: relative;
+}
+
+/* ===== BOARD (sprite lớn) ===== */
+
+.board {
+  width: 1000px;
+  height: 650px;
+  background: url("../imgs/ui.png") no-repeat -0px -0px;
+  background-size: auto;
+  position: absolute;
+  left: 0;
+  top: 50px;
+}
+
+/* ===== TIMER ===== */
+
+.timer {
+  position: absolute;
+  top: 170px;
+  left: 420px;
+  font-size: 80px;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 0 15px red;
+}
+
+/* ===== SESSION ===== */
+
+.session {
+  position: absolute;
+  top: 120px;
+  left: 390px;
+  font-size: 18px;
+  color: yellow;
+}
+
+/* ===== BET AREAS ===== */
+
+.bet-xiu {
+  position: absolute;
+  left: 180px;
+  top: 330px;
+  width: 200px;
+  height: 90px;
+  cursor: pointer;
+}
+
+.bet-tai {
+  position: absolute;
+  right: 180px;
+  top: 330px;
+  width: 200px;
+  height: 90px;
+  cursor: pointer;
+}
+
+/* ===== INPUT ===== */
+
+.bet-input {
+  position: absolute;
+  width: 160px;
+  height: 50px;
+  border-radius: 40px;
+  border: none;
+  text-align: center;
+  font-size: 22px;
+  outline: none;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+}
+
+.input-xiu {
+  left: 200px;
+  top: 430px;
+}
+
+.input-tai {
+  right: 200px;
+  top: 430px;
+}
+
+/* ===== DICE AREA ===== */
+
+.dice-area {
+  position: absolute;
+  top: 260px;
+  left: 380px;
+  display: flex;
+  gap: 20px;
+}
+
+/* Sprite dice */
+
+.dice {
+  width: 120px;
+  height: 120px;
+  background-image: url("../imgs/dice.png");
+  background-repeat: no-repeat;
+}
+
+/* ===== ROLLING ===== */
+
+.roll-img {
+  position: absolute;
+  top: 260px;
+  left: 380px;
+  width: 300px;
+}
+
+/* ===== BALANCE ===== */
+
+.balance {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: white;
+  font-weight: bold;
+}
+
+/* ===== STATUS ===== */
+
+.status {
+  position: absolute;
+  bottom: 40px;
+  left: 400px;
+  font-size: 20px;
+  color: yellow;
+  text-shadow: 0 0 5px black;
+}
