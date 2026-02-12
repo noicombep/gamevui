@@ -19,7 +19,11 @@ export default function TaiXiuGame() {
 const loadRecent = async () => {
   try {
     const res = await api.get("/game/recent");
-    setRecentSessions(res.data);
+        const sorted = res.data.sort(
+      (a, b) => new Date(a.startTime) - new Date(b.startTime)
+    );
+
+    setRecentSessions(sorted);
   } catch (err) {
     console.log("Lỗi load recent", err);
   }
