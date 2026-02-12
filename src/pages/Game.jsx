@@ -190,21 +190,30 @@ const [bowlPosition, setBowlPosition] = useState({ x: 0, y: 0 });
 
         <div className="mt-6 text-center">
 
-<div className="flex justify-center items-center gap-10 mt-10">
+<div className="flex justify-center items-center 
+gap-3 sm:gap-10 mt-6 sm:mt-10 w-full max-w-md sm:max-w-none">
+
 
   {/* TÀI */}
   <motion.div
     whileHover={{ scale: 1.05 }}
-    className="bg-red-600 rounded-3xl px-10 py-12 text-center shadow-2xl min-w-[180px]"
+className="bg-red-600 rounded-2xl 
+px-4 py-5 sm:px-10 sm:py-12
+text-center shadow-xl 
+w-24 sm:min-w-[180px]"
   >
-    <h2 className="text-4xl font-bold mb-4">TÀI</h2>
-    <p className="text-xl">
+<h2 className="text-lg sm:text-4xl font-bold mb-2 sm:mb-4">
+TÀI</h2>
+<p className="text-xs sm:text-xl">
+
       💰 {totalTai.toLocaleString()}
     </p>
   </motion.div>
 
 {/* BÁT + DICE */}
-<div className="relative w-72 h-72 flex items-center justify-center">
+<div className="relative 
+w-36 h-36 sm:w-72 sm:h-72 
+flex items-center justify-center">
 
   {/* Dice container */}
   <div className="flex flex-col items-center justify-center gap-6">
@@ -253,11 +262,14 @@ const [bowlPosition, setBowlPosition] = useState({ x: 0, y: 0 });
     whileDrag={{ scale: 1.05 }}
       animate={result === null ? { x: 0, y: 0 } : {}}
     transition={{ type: "spring", stiffness: 150, damping: 15 }}
-    className="absolute w-56 h-56 rounded-full
-      bg-gradient-to-b from-gray-200 via-gray-400 to-gray-600
-      shadow-[0_20px_40px_rgba(0,0,0,0.6)]
-      border-4 border-gray-500
-      flex items-start justify-center"
+className="absolute 
+w-28 h-28 sm:w-56 sm:h-56 
+rounded-full
+bg-gradient-to-b from-gray-200 via-gray-400 to-gray-600
+shadow-[0_10px_20px_rgba(0,0,0,0.6)]
+border-2 sm:border-4 border-gray-500
+flex items-start justify-center"
+
   >
     <div className="w-10 h-10 bg-gray-500 rounded-full mt-3 shadow-inner border border-gray-400" />
   </motion.div>
@@ -268,10 +280,15 @@ const [bowlPosition, setBowlPosition] = useState({ x: 0, y: 0 });
   {/* XỈU */}
   <motion.div
     whileHover={{ scale: 1.05 }}
-    className="bg-blue-600 rounded-3xl px-10 py-12 text-center shadow-2xl min-w-[180px]"
+className="bg-blue-600 rounded-2xl 
+px-4 py-5 sm:px-10 sm:py-12
+text-center shadow-xl 
+w-24 sm:min-w-[180px]"
   >
-    <h2 className="text-4xl font-bold mb-4">XỈU</h2>
-    <p className="text-xl">
+   <h2 className="text-lg sm:text-4xl font-bold mb-2 sm:mb-4">
+XỈU</h2>
+<p className="text-xs sm:text-xl">
+
       💰 {totalXiu.toLocaleString()}
     </p>
   </motion.div>

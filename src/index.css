@@ -12,8 +12,8 @@
 
 
 .dice {
-  width: 90px;
-  height: 90px;
+  width: 30px;
+  height: 30px;
 
   background-image: url("./imgs/dice.png");
   background-repeat: no-repeat;
@@ -21,6 +21,14 @@
   /* 6 mặt nằm ngang */
   background-size: 600% 100%;
 
+}
+
+
+@media (min-width: 640px) {
+  .dice {
+    width: 70px;
+    height: 70px;
+  }
 }
 
 
