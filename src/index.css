@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@keyframes screenShake {
+  0% { transform: translate(0); }
+  20% { transform: translate(-10px, 5px); }
+  40% { transform: translate(10px, -5px); }
+  60% { transform: translate(-10px, 5px); }
+  80% { transform: translate(10px, -5px); }
+  100% { transform: translate(0); }
+}
+
+
+.dice {
+  width: 90px;
+  height: 90px;
+
+  background-image: url("./imgs/dice.png");
+  background-repeat: no-repeat;
+
+  /* 6 mặt nằm ngang */
+  background-size: 600% 100%;
+
+}
+
+
+@media (min-width: 768px) {
+  .dice {
+    width: 90px;
+    height: 90px;
+  }
+}
+
+
+.shake {
+  animation: screenShake 0.6s ease-in-out;
+}

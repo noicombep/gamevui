@@ -6,6 +6,11 @@ import { startConnection, getConnection } from "../services/signalr";
 
 export default function TaiXiuGame() {
   const [recentSessions, setRecentSessions] = useState([]);
+  const [shakeScreen, setShakeScreen] = useState(false);
+  const [isRolling, setIsRolling] = useState(false);
+  const [showBowl, setShowBowl] = useState(true);
+const [bowlPosition, setBowlPosition] = useState({ x: 0, y: 0 });
+
 
   const [sessionId, setSessionId] = useState(null);
   const [countdown, setCountdown] = useState(0);
@@ -16,18 +21,18 @@ export default function TaiXiuGame() {
   const [totalTai, setTotalTai] = useState(0);
   const [totalXiu, setTotalXiu] = useState(0);
   const [username, setUsername] = useState("");
-const loadRecent = async () => {
-  try {
-    const res = await api.get("/game/recent");
-        const sorted = res.data.sort(
-      (a, b) => new Date(a.startTime) - new Date(b.startTime)
-    );
+  const loadRecent = async () => {
+    try {
+      const res = await api.get("/game/recent");
+      const sorted = res.data.sort(
+        (a, b) => new Date(a.startTime) - new Date(b.startTime)
+      );
 
-    setRecentSessions(sorted);
-  } catch (err) {
-    console.log("Lỗi load recent", err);
-  }
-};
+      setRecentSessions(sorted);
+    } catch (err) {
+      console.log("Lỗi load recent", err);
+    }
+  };
 
   const isBettingPhase = phase === "Betting";
 
@@ -46,8 +51,8 @@ const loadRecent = async () => {
       connection = await startConnection({
         onSessionStarted: (id) => {
           setSessionId(id);
-          setResult(null);
           setTotalTai(0);
+          setResult(null);
           setTotalXiu(0);
           loadBalance();
         },
@@ -55,12 +60,33 @@ const loadRecent = async () => {
         onCountdown: (time, phaseName) => {
           setCountdown(time);
           setPhase(phaseName);
+
+          if (phaseName === "Rolling") {
+            setIsRolling(true);
+            setShowBowl(true); // úp bát lại
+          }
         },
+
 
         onSessionResult: (session) => {
           setResult(session);
+          setIsRolling(false);
+
+          setTimeout(() => {
+            setShowBowl(false); // kéo bát lên
+          }, 500);
+
+          if (session.total >= 15) {
+            setShakeScreen(true);
+            setTimeout(() => setShakeScreen(false), 600);
+          }
+          setTimeout(() => {
             loadRecent();
+          }, 10000);
+
+
         },
+
 
         onBetPlaced: (data) => {
           setBalance(data.balance);
@@ -103,9 +129,18 @@ const loadRecent = async () => {
     localStorage.removeItem("token");
     window.location.href = "/login";
   };
+  useEffect(() => {
+    if (result === null) {
+      setShowBowl(true);   // úp bát lại
+      setIsRolling(false); // đảm bảo không còn quay
+            setBowlPosition({ x: 0, y: 0 });
+
+    }
+  }, [result]);
+
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white flex flex-col items-center p-4 md:p-6">
+    <div className={`min-h-screen bg-gradient-to-br from-gray-900 to-black text-white flex flex-col items-center p-4 md:p-6 ${shakeScreen ? "shake" : ""}`}>
 
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center w-full max-w-6xl mb-6 gap-4">
@@ -117,16 +152,16 @@ const loadRecent = async () => {
             Session: {sessionId}
           </p>
         </div>
-<p className="text-green-400 font-semibold">
-  👤 {username}
-</p>
+        <p className="text-green-400 font-semibold">
+          👤 {username}
+        </p>
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-green-600 px-4 py-2 rounded-full shadow-lg text-sm md:text-base">
             <Wallet size={16} />
             {balance.toLocaleString()} VNĐ
           </div>
-    
+
           <button
             onClick={handleLogout}
             className="px-3 py-2 bg-gray-700 hover:bg-gray-800 rounded-xl text-xs md:text-sm font-semibold"
@@ -177,34 +212,185 @@ const loadRecent = async () => {
           {countdown}s
         </motion.h1>
 
-        {result && (
-          <div className="mt-6">
-            <h2 className="text-2xl md:text-4xl">
-              🎲 {result.dice1} - {result.dice2} - {result.dice3}
-            </h2>
-            <h2 className="text-lg md:text-2xl mt-2">
-              Tổng: {result.total} →{" "}
-              {result.result === 1 ? "TÀI" : "XỈU"}
-            </h2>
+        <div className="mt-6 text-center">
+
+          <div className="mt-8 flex flex-col items-center">
+
+            {/* BÁT */}
+            <motion.div
+              drag={result ? true : false}
+              dragMomentum={false}
+              whileDrag={{ scale: 1.05 }}
+              onDragEnd={(event, info) => {
+                // Nếu kéo đủ xa khỏi vị trí ban đầu thì coi như mở
+                if (
+                  result &&
+                  (Math.abs(info.offset.x) > 1 ||
+                    Math.abs(info.offset.y) > 1)
+                ) {
+                  setShowBowl(false);
+                  setBowlPosition({ x: 0, y: -10 });
+                }
+              }}
+  animate={
+    result === null
+      ? { x: 0, y: 0 }   // hết phiên -> tự về giữa
+      : {}
+  }
+
+              transition={{ type: "spring", stiffness: 150, damping: 15 }}
+              className="absolute z-20 
+             w-56 h-56
+
+             rounded-full 
+             bg-gradient-to-b 
+             from-gray-200 
+             via-gray-400 
+             to-gray-600
+             shadow-[0_20px_40px_rgba(0,0,0,0.6)]
+             border-4 border-gray-500
+             flex items-start justify-center
+             cursor-grab active:cursor-grabbing"
+            >
+              {/* Núm cầm */}
+              <div className="w-10 h-10 bg-gray-500 rounded-full mt-3 shadow-inner border border-gray-400" />
+            </motion.div>
+
+
+
+            {/* Dice trên */}
+            <motion.div
+              className="dice mb-4"
+              animate={{ rotate: isRolling ? 720 : 0 }}
+              transition={{ duration: 0.6 }}
+              style={{
+                backgroundPositionX: `${(
+                  isRolling
+                    ? Math.floor(Math.random() * 6)
+                    : (result?.dice1 ?? 1) - 1
+                ) * 20
+                  }%`
+                ,
+              }}
+            />
+
+            {/* 2 Dice dưới */}
+            <div className="flex gap-8">
+              {[2, 3].map((i) => {
+                const faceIndex = isRolling
+                  ? Math.floor(Math.random() * 6)
+                  : (result?.[`dice${i}`] ? result[`dice${i}`] - 1 : 0);
+
+                return (
+                  <motion.div
+                    key={i}
+                    className="dice"
+                    animate={{ rotate: isRolling ? 720 : 0 }}
+                    transition={{ duration: 0.8 }}
+                    style={{
+                      backgroundPositionX: `${faceIndex * 20}%`,
+                    }}
+                  />
+                );
+              })}
+            </div>
+
           </div>
-        )}
+
+
+
+          {/* {result && !isRolling && (
+            <motion.h2
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className={`text-xl md:text-3xl mt-6 font-bold
+        ${result.result === 1
+                  ? "text-red-500 drop-shadow-[0_0_15px_red]"
+                  : "text-blue-500 drop-shadow-[0_0_15px_blue]"
+                }
+      `}
+            >
+              Tổng: {result.total} →{" "}
+              {result.result === 1 ? "TÀI 🔥" : "XỈU 💎"}
+            </motion.h2>
+          )} */}
+
+        </div>
+
         {/* 10 phiên gần nhất */}
-<div className="flex justify-center gap-2 mt-4 flex-wrap">
-  {recentSessions.map((item) => (
-    <div
-      key={item.id}
-      className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs font-bold shadow-lg
+        <div className="flex justify-center gap-2 mt-16 flex-wrap">
+          {recentSessions.map((item) => (
+            <div
+              key={item.id}
+              className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs font-bold shadow-lg
         ${item.result === 1 ? "bg-red-600" : "bg-blue-600"}
       `}
-    >
-      {item.result === 1 ? "T" : "X"}
-    </div>
-  ))}
-</div>
+            >
+              {item.result === 1 ? "T" : "X"}
+            </div>
+          ))}
+        </div>
       </div>
+{/* QUICK ACTIONS */}
+<div className="flex flex-wrap justify-center gap-2">
+
+  <button
+    type="button"
+    disabled={!isBettingPhase}
+    onClick={() => setAmount((Number(amount) || 0) + 10000)}
+    className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-semibold disabled:opacity-50"
+  >
+    +10k
+  </button>
+
+  <button
+    type="button"
+    disabled={!isBettingPhase}
+    onClick={() => setAmount((Number(amount) || 0) + 50000)}
+    className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-semibold disabled:opacity-50"
+  >
+    +50k
+  </button>
+
+  <button
+    type="button"
+    disabled={!isBettingPhase}
+    onClick={() => setAmount((Number(amount) || 0) + 100000)}
+    className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-semibold disabled:opacity-50"
+  >
+    +100k
+  </button>
+
+  <button
+    type="button"
+    disabled={!isBettingPhase}
+    onClick={() => setAmount((Number(amount) || 0) + 1000000)}
+    className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-semibold disabled:opacity-50"
+  >
+    +1000k
+  </button>
+  <button
+    type="button"
+    disabled={!isBettingPhase}
+    onClick={() => setAmount(Math.floor(balance / 2))}
+    className="px-3 py-2 bg-yellow-600 hover:bg-yellow-500 rounded-lg text-sm font-bold disabled:opacity-50"
+  >
+    1/2 tiền
+  </button>
+
+  <button
+    type="button"
+    disabled={!isBettingPhase}
+    onClick={() => setAmount(balance)}
+    className="px-3 py-2 bg-green-600 hover:bg-green-500 rounded-lg text-sm font-bold disabled:opacity-50"
+  >
+    ALL IN
+  </button>
+
+</div>
 
       {/* BET INPUT */}
-      <div className="flex flex-col items-center gap-4 w-full max-w-md">
+      <div className="flex flex-col items-center mt-6 gap-4 w-full max-w-md">
         <input
           type="number"
           placeholder="Nhập số tiền"
