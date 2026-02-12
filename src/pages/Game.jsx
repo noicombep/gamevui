@@ -171,31 +171,7 @@ const [bowlPosition, setBowlPosition] = useState({ x: 0, y: 0 });
         </div>
       </div>
 
-      {/* BET PANELS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full max-w-6xl mb-8">
 
-        {/* TÀI */}
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          className="bg-red-600 rounded-2xl md:rounded-3xl p-6 md:p-10 text-center shadow-2xl"
-        >
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">TÀI</h2>
-          <p className="text-lg md:text-2xl">
-            💰 {totalTai.toLocaleString()} VNĐ
-          </p>
-        </motion.div>
-
-        {/* XỈU */}
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          className="bg-blue-600 rounded-2xl md:rounded-3xl p-6 md:p-10 text-center shadow-2xl"
-        >
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">XỈU</h2>
-          <p className="text-lg md:text-2xl">
-            💰 {totalXiu.toLocaleString()} VNĐ
-          </p>
-        </motion.div>
-      </div>
 
       {/* COUNTDOWN + RESULT */}
       <div className="text-center mb-8">
@@ -214,88 +190,94 @@ const [bowlPosition, setBowlPosition] = useState({ x: 0, y: 0 });
 
         <div className="mt-6 text-center">
 
-          <div className="mt-8 flex flex-col items-center">
+<div className="flex justify-center items-center gap-10 mt-10">
 
-            {/* BÁT */}
-            <motion.div
-              drag={result ? true : false}
-              dragMomentum={false}
-              whileDrag={{ scale: 1.05 }}
-              onDragEnd={(event, info) => {
-                // Nếu kéo đủ xa khỏi vị trí ban đầu thì coi như mở
-                if (
-                  result &&
-                  (Math.abs(info.offset.x) > 1 ||
-                    Math.abs(info.offset.y) > 1)
-                ) {
-                  setShowBowl(false);
-                  setBowlPosition({ x: 0, y: -10 });
-                }
-              }}
-  animate={
-    result === null
-      ? { x: 0, y: 0 }   // hết phiên -> tự về giữa
-      : {}
-  }
+  {/* TÀI */}
+  <motion.div
+    whileHover={{ scale: 1.05 }}
+    className="bg-red-600 rounded-3xl px-10 py-12 text-center shadow-2xl min-w-[180px]"
+  >
+    <h2 className="text-4xl font-bold mb-4">TÀI</h2>
+    <p className="text-xl">
+      💰 {totalTai.toLocaleString()}
+    </p>
+  </motion.div>
 
-              transition={{ type: "spring", stiffness: 150, damping: 15 }}
-              className="absolute z-20 
-             w-56 h-56
+{/* BÁT + DICE */}
+<div className="relative w-72 h-72 flex items-center justify-center">
 
-             rounded-full 
-             bg-gradient-to-b 
-             from-gray-200 
-             via-gray-400 
-             to-gray-600
-             shadow-[0_20px_40px_rgba(0,0,0,0.6)]
-             border-4 border-gray-500
-             flex items-start justify-center
-             cursor-grab active:cursor-grabbing"
-            >
-              {/* Núm cầm */}
-              <div className="w-10 h-10 bg-gray-500 rounded-full mt-3 shadow-inner border border-gray-400" />
-            </motion.div>
+  {/* Dice container */}
+  <div className="flex flex-col items-center justify-center gap-6">
+    <motion.div
+      className="dice"
+      animate={{ rotate: isRolling ? 720 : 0 }}
+      transition={{ duration: 0.6 }}
+      style={{
+        backgroundPositionX: `${
+          (
+            isRolling
+              ? Math.floor(Math.random() * 6)
+              : (result?.dice1 ?? 1) - 1
+          ) * 20
+        }%`,
+      }}
+    />
+
+    <div className="flex gap-6">
+      {[2, 3].map((i) => {
+        const faceIndex = isRolling
+          ? Math.floor(Math.random() * 6)
+          : (result?.[`dice${i}`]
+              ? result[`dice${i}`] - 1
+              : 0);
+
+        return (
+          <motion.div
+            key={i}
+            className="dice"
+            animate={{ rotate: isRolling ? 720 : 0 }}
+            transition={{ duration: 0.8 }}
+            style={{
+              backgroundPositionX: `${faceIndex * 20}%`,
+            }}
+          />
+        );
+      })}
+    </div>
+  </div>
+
+  {/* BÁT */}
+  <motion.div
+    drag={!!result}
+    dragMomentum={false}
+    whileDrag={{ scale: 1.05 }}
+      animate={result === null ? { x: 0, y: 0 } : {}}
+    transition={{ type: "spring", stiffness: 150, damping: 15 }}
+    className="absolute w-56 h-56 rounded-full
+      bg-gradient-to-b from-gray-200 via-gray-400 to-gray-600
+      shadow-[0_20px_40px_rgba(0,0,0,0.6)]
+      border-4 border-gray-500
+      flex items-start justify-center"
+  >
+    <div className="w-10 h-10 bg-gray-500 rounded-full mt-3 shadow-inner border border-gray-400" />
+  </motion.div>
+
+</div>
 
 
+  {/* XỈU */}
+  <motion.div
+    whileHover={{ scale: 1.05 }}
+    className="bg-blue-600 rounded-3xl px-10 py-12 text-center shadow-2xl min-w-[180px]"
+  >
+    <h2 className="text-4xl font-bold mb-4">XỈU</h2>
+    <p className="text-xl">
+      💰 {totalXiu.toLocaleString()}
+    </p>
+  </motion.div>
 
-            {/* Dice trên */}
-            <motion.div
-              className="dice mb-4"
-              animate={{ rotate: isRolling ? 720 : 0 }}
-              transition={{ duration: 0.6 }}
-              style={{
-                backgroundPositionX: `${(
-                  isRolling
-                    ? Math.floor(Math.random() * 6)
-                    : (result?.dice1 ?? 1) - 1
-                ) * 20
-                  }%`
-                ,
-              }}
-            />
+</div>
 
-            {/* 2 Dice dưới */}
-            <div className="flex gap-8">
-              {[2, 3].map((i) => {
-                const faceIndex = isRolling
-                  ? Math.floor(Math.random() * 6)
-                  : (result?.[`dice${i}`] ? result[`dice${i}`] - 1 : 0);
-
-                return (
-                  <motion.div
-                    key={i}
-                    className="dice"
-                    animate={{ rotate: isRolling ? 720 : 0 }}
-                    transition={{ duration: 0.8 }}
-                    style={{
-                      backgroundPositionX: `${faceIndex * 20}%`,
-                    }}
-                  />
-                );
-              })}
-            </div>
-
-          </div>
 
 
 
