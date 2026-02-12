@@ -5,6 +5,8 @@ import api from "../services/api";
 import { startConnection, getConnection } from "../services/signalr";
 
 export default function TaiXiuGame() {
+  const [recentSessions, setRecentSessions] = useState([]);
+
   const [sessionId, setSessionId] = useState(null);
   const [countdown, setCountdown] = useState(0);
   const [phase, setPhase] = useState("");
@@ -14,6 +16,14 @@ export default function TaiXiuGame() {
   const [totalTai, setTotalTai] = useState(0);
   const [totalXiu, setTotalXiu] = useState(0);
   const [username, setUsername] = useState("");
+const loadRecent = async () => {
+  try {
+    const res = await api.get("/game/recent");
+    setRecentSessions(res.data);
+  } catch (err) {
+    console.log("Lỗi load recent", err);
+  }
+};
 
   const isBettingPhase = phase === "Betting";
 
@@ -45,6 +55,7 @@ export default function TaiXiuGame() {
 
         onSessionResult: (session) => {
           setResult(session);
+            loadRecent();
         },
 
         onBetPlaced: (data) => {
@@ -64,6 +75,7 @@ export default function TaiXiuGame() {
   }, []);
 
   useEffect(() => {
+    loadRecent();
     loadBalance();
   }, []);
 
@@ -172,6 +184,19 @@ export default function TaiXiuGame() {
             </h2>
           </div>
         )}
+        {/* 10 phiên gần nhất */}
+<div className="flex justify-center gap-2 mt-4 flex-wrap">
+  {recentSessions.map((item) => (
+    <div
+      key={item.id}
+      className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs font-bold shadow-lg
+        ${item.result === 1 ? "bg-red-600" : "bg-blue-600"}
+      `}
+    >
+      {item.result === 1 ? "T" : "X"}
+    </div>
+  ))}
+</div>
       </div>
 
       {/* BET INPUT */}
