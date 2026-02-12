@@ -6,7 +6,7 @@ export const startConnection = async (handlers) => {
   if (connection) return connection;
 
   connection = new signalR.HubConnectionBuilder()
-    .withUrl("https://localhost:7069/gamehub", {
+    .withUrl("https://noicombep-bdgba7fhbzdfencp.southeastasia-01.azurewebsites.net/gamehub", {
       accessTokenFactory: () => localStorage.getItem("token"),
     })
     .withAutomaticReconnect()
