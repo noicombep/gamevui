@@ -206,7 +206,7 @@ w-24 sm:min-w-[180px]"
 TÀI</h2>
 <p className="text-xs sm:text-xl">
 
-      💰 {totalTai.toLocaleString()}
+      {/* 💰 {totalTai.toLocaleString()} */}
     </p>
   </motion.div>
 
@@ -289,7 +289,7 @@ w-24 sm:min-w-[180px]"
 XỈU</h2>
 <p className="text-xs sm:text-xl">
 
-      💰 {totalXiu.toLocaleString()}
+      {/* 💰 {totalXiu.toLocaleString()} */}
     </p>
   </motion.div>
 
