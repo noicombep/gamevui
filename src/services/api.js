@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://noicombep-bdgba7fhbzdfencp.southeastasia-01.azurewebsites.net/api"
+  baseURL: "https://api.shopgau.store/api"
  // baseURL: "https://localhost:7069/api"
 
 });

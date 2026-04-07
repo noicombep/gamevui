@@ -10,7 +10,7 @@ export default function AdminPage() {
 
   const api = axios.create({
     //baseURL: "https://localhost:7069/api",
-    baseURL: "https://noicombep-bdgba7fhbzdfencp.southeastasia-01.azurewebsites.net/api",
+    baseURL: "https://api.shopgau.store/api",
     headers: {
       Authorization: `Bearer ${token}`,
     },
